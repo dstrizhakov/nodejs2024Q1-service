@@ -3,11 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
-  Header,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
