@@ -1,7 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Database } from '../../database';
+import { validate } from 'uuid';
+import { ITrack } from 'src/types';
 
 @Injectable()
 export class TrackService {
@@ -15,8 +17,17 @@ export class TrackService {
     return this.trackDatabase.getAll('tracks');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  findOne(id: string) {
+    if (!validate(id)) {
+      throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
+    }
+    const track = this.trackDatabase.getOne('track', id) as ITrack;
+    if (!track) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+    }
+    return {
+      ...track,
+    };
   }
 
   update(id: number, updateTrackDto: UpdateTrackDto) {

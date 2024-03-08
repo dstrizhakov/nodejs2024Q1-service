@@ -65,15 +65,56 @@ export class Database {
         return null;
     }
   }
-  addUser(user: IUser) {
-    this.users.push(user);
+
+  public getOne(target: 'user' | 'track' | 'artist' | 'album', id: string) {
+    switch (target) {
+      case 'user':
+        return this.users.find((user) => user.id === id);
+      case 'track':
+        return this.tracks.find((track) => track.id === id);
+      case 'artist':
+        return this.artists.find((artist) => artist.id === id);
+      case 'album':
+        return this.albums.find((album) => album.id === id);
+      default:
+        return null;
+    }
   }
-  getUser(id: string) {
-    return this.users.find((user) => user.id === id);
+
+  public add(
+    target: 'user' | 'track' | 'artist' | 'album',
+    dto: IUser | ITrack | IAlbum | IArtist,
+  ) {
+    switch (target) {
+      case 'user':
+        this.users.push(dto as IUser);
+        break;
+      case 'track':
+        this.tracks.push(dto as ITrack);
+        break;
+      case 'artist':
+        this.artists.push(dto as IArtist);
+        break;
+      case 'album':
+        this.albums.push(dto as IAlbum);
+        break;
+      default:
+        return null;
+    }
   }
-  deleteUser(id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
+
+  public delete(target: 'user' | 'track' | 'artist' | 'album', id: string) {
+    switch (target) {
+      case 'user':
+        this.users = this.users.filter((user) => user.id !== id);
+      case 'track':
+        this.tracks = this.tracks.filter((track) => track.id !== id);
+      case 'artist':
+        this.artists = this.artists.filter((artist) => artist.id !== id);
+      case 'album':
+        this.albums = this.albums.filter((album) => album.id !== id);
+      default:
+        return null;
+    }
   }
 }
-
-export const database =  new Database();

@@ -19,7 +19,7 @@ export class ArtistController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.artistService.findOne(+id);
+    return this.artistService.findOne(id);
   }
 
   @Patch(':id')

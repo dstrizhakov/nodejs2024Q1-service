@@ -7,13 +7,7 @@ import { Database } from '../../database';
 
 @Injectable()
 export class UserService {
-  
   constructor(@Inject('Database') private userDatabase: Database) {}
-
-  findAll() {
-    const users = this.userDatabase.getAll('users') as IUser[];
-    return users.map(({ password, ...user }) => user);
-  }
 
   create({ login, password }: CreateUserDto) {
     if (!login || !password) {
@@ -27,18 +21,23 @@ export class UserService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    this.userDatabase.addUser(user);
+    this.userDatabase.add('user', user);
     return {
       ...user,
       password: undefined,
     };
   }
 
+  findAll() {
+    const users = this.userDatabase.getAll('users') as IUser[];
+    return users.map(({ password, ...user }) => user);
+  }
+
   findOne(id: string) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getUser(id);
+    const user = this.userDatabase.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -52,7 +51,7 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getUser(id);
+    const user = this.userDatabase.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -73,11 +72,11 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getUser(id);
+    const user = this.userDatabase.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    this.userDatabase.deleteUser(id);
+    this.userDatabase.delete('user', id);
     throw new HttpException('User deleted', HttpStatus.NO_CONTENT);
   }
 }
