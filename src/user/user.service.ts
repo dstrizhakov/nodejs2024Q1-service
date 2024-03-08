@@ -1,27 +1,25 @@
-import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from 'src/types';
+import { IUser } from 'src/types';
 import { v4, validate } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { Database } from '../../database';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [
-    {
-      id: 'e8e5e1d7-c45a-44ea-922f-5ba567aab692',
-      login: 'dmitry',
-      password: '123',
-      version: 1,
-      createdAt: 1709746501901,
-      updatedAt: 1709746501901,
-    },
-  ];
+  
+  constructor(@Inject('Database') private userDatabase: Database) {}
+
+  findAll() {
+    const users = this.userDatabase.getAll('users') as IUser[];
+    return users.map(({ password, ...user }) => user);
+  }
 
   create({ login, password }: CreateUserDto) {
     if (!login || !password) {
       throw new HttpException('', HttpStatus.BAD_REQUEST);
     }
-    const user: User = {
+    const user: IUser = {
       id: v4(),
       login: login,
       password: password,
@@ -29,41 +27,24 @@ export class UserService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    this.users.push(user);
+    this.userDatabase.addUser(user);
     return {
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...user,
+      password: undefined,
     };
-  }
-
-  async findAll() {
-    return this.users.map((user) => ({
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.createdAt,
-    }));
   }
 
   findOne(id: string) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userDatabase.getUser(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return {
-      id: user.id,
-      login: user.login,
-      _password: user.password,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...user,
+      password: undefined,
     };
   }
 
@@ -71,7 +52,7 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userDatabase.getUser(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -83,23 +64,20 @@ export class UserService {
     user.updatedAt = Date.now();
     user.version += 1;
     return {
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }
+      ...user,
+      password: undefined,
+    };
   }
 
   remove(id: string) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userDatabase.getUser(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    this.users = this.users.filter((user) => user.id !== id);
+    this.userDatabase.deleteUser(id);
     throw new HttpException('User deleted', HttpStatus.NO_CONTENT);
   }
 }
