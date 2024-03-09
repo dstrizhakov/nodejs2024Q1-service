@@ -4,7 +4,7 @@ import { TrackController } from './track.controller';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-  imports:[DatabaseModule],
+  imports: [DatabaseModule],
   controllers: [TrackController],
   providers: [TrackService],
 })

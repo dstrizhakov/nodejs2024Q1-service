@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, HttpException, Inject } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUser } from 'src/types';
 import { v4, validate } from 'uuid';
@@ -30,7 +30,7 @@ export class UserService {
 
   findAll() {
     const users = this.database.getAll('users') as IUser[];
-    return users.map(({ password, ...user }) => user);
+    return users.map((user) => ({ ...user, password: undefined }));
   }
 
   findOne(id: string) {

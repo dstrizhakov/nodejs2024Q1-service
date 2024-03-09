@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-
 import { validate } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
 

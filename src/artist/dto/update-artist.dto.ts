@@ -1,4 +1,4 @@
 export class UpdateArtistDto {
-    name: string;
-    grammy: boolean;
+  name: string;
+  grammy: boolean;
 }

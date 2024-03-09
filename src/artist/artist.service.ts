@@ -38,7 +38,6 @@ export class ArtistService {
   }
 
   update(id: string, { name, grammy }: UpdateArtistDto) {
-
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
