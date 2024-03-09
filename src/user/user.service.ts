@@ -3,11 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { IUser } from 'src/types';
 import { v4, validate } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { Database } from '../../database';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class UserService {
-  constructor(@Inject('Database') private userDatabase: Database) {}
+  constructor(private database: DatabaseService) {}
 
   create({ login, password }: CreateUserDto) {
     if (!login || !password) {
@@ -21,7 +21,7 @@ export class UserService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    this.userDatabase.add('user', user);
+    this.database.add('user', user);
     return {
       ...user,
       password: undefined,
@@ -29,7 +29,7 @@ export class UserService {
   }
 
   findAll() {
-    const users = this.userDatabase.getAll('users') as IUser[];
+    const users = this.database.getAll('users') as IUser[];
     return users.map(({ password, ...user }) => user);
   }
 
@@ -37,7 +37,7 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getOne('user', id) as IUser;
+    const user = this.database.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -51,7 +51,7 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getOne('user', id) as IUser;
+    const user = this.database.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -72,11 +72,11 @@ export class UserService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const user = this.userDatabase.getOne('user', id) as IUser;
+    const user = this.database.getOne('user', id) as IUser;
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    this.userDatabase.delete('user', id);
+    this.database.delete('user', id);
     throw new HttpException('User deleted', HttpStatus.NO_CONTENT);
   }
 }

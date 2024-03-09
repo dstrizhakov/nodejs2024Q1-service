@@ -1,16 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { TrackController } from './track.controller';
-import { Database } from '../../database';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
+  imports:[DatabaseModule],
   controllers: [TrackController],
-  providers: [
-    TrackService,
-    {
-      provide: 'Database',
-      useClass: Database,
-    },
-  ],
+  providers: [TrackService],
 })
 export class TrackModule {}

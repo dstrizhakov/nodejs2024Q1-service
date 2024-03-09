@@ -4,10 +4,11 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { Database } from '../../database';
 import { v4, validate } from 'uuid';
 import { ITrack } from 'src/types';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class TrackService {
-  constructor(@Inject('Database') private trackDatabase: Database) {}
+  constructor(private database: DatabaseService) {}
 
   create({ name, artistId, albumId, duration }: CreateTrackDto) {
     if (!name || typeof duration !== 'number') {
@@ -20,21 +21,21 @@ export class TrackService {
       albumId: albumId || null,
       duration,
     };
-    this.trackDatabase.add('track', track);
+    this.database.add('track', track);
     return {
       ...track,
     };
   }
 
   findAll() {
-    return this.trackDatabase.getAll('tracks');
+    return this.database.getAll('tracks');
   }
 
   findOne(id: string) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const track = this.trackDatabase.getOne('track', id) as ITrack;
+    const track = this.database.getOne('track', id) as ITrack;
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -47,7 +48,7 @@ export class TrackService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const track = this.trackDatabase.getOne('track', id) as ITrack;
+    const track = this.database.getOne('track', id) as ITrack;
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -62,11 +63,11 @@ export class TrackService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const track = this.trackDatabase.getOne('track', id) as ITrack;
+    const track = this.database.getOne('track', id) as ITrack;
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    this.trackDatabase.delete('track', id);
+    this.database.delete('track', id);
     throw new HttpException('Track deleted', HttpStatus.NO_CONTENT);
   }
 }

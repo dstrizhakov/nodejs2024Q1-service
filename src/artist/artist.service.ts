@@ -4,10 +4,11 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Database } from '../../database';
 import { v4, validate } from 'uuid';
 import { IArtist } from 'src/types';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(@Inject('Database') private artistDatabase: Database) {}
+  constructor(private database: DatabaseService) {}
 
   create({ name, grammy }: CreateArtistDto) {
     if (!name || typeof grammy !== 'boolean') {
@@ -18,19 +19,19 @@ export class ArtistService {
       name,
       grammy,
     };
-    this.artistDatabase.add('artist', artist);
+    this.database.add('artist', artist);
     return artist;
   }
 
   findAll() {
-    return this.artistDatabase.getAll('artists');
+    return this.database.getAll('artists');
   }
 
   findOne(id: string) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const artist = this.artistDatabase.getOne('artist', id) as IArtist;
+    const artist = this.database.getOne('artist', id) as IArtist;
     if (!artist) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -41,7 +42,7 @@ export class ArtistService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const artist = this.artistDatabase.getOne('album', id) as IArtist;
+    const artist = this.database.getOne('album', id) as IArtist;
     if (!artist) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -55,11 +56,11 @@ export class ArtistService {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
-    const artist = this.artistDatabase.getOne('artist', id) as IArtist;
+    const artist = this.database.getOne('artist', id) as IArtist;
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
-    this.artistDatabase.delete('artist', id);
+    this.database.delete('artist', id);
     throw new HttpException('Artist deleted', HttpStatus.NO_CONTENT);
   }
 }

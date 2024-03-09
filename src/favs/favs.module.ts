@@ -1,16 +1,11 @@
 import { Module } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { FavsController } from './favs.controller';
-import { Database } from '../../database';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
+  imports:[DatabaseModule],
   controllers: [FavsController],
-  providers: [
-    FavsService,
-    {
-      provide: 'Database',
-      useClass: Database,
-    },
-  ],
+  providers: [FavsService],
 })
 export class FavsModule {}

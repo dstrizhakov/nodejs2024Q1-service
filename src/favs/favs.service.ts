@@ -1,12 +1,11 @@
-import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateFavDto } from './dto/create-fav.dto';
-import { UpdateFavDto } from './dto/update-fav.dto';
-import { Database } from '../../database';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+
 import { validate } from 'uuid';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class FavsService {
-  constructor(@Inject('Database') private favsDatabase: Database) {}
+  constructor(private database: DatabaseService) {}
 
   create(target: 'track' | 'artist' | 'album', id: string) {
     if (!validate(id)) {
@@ -14,40 +13,40 @@ export class FavsService {
     }
     switch (target) {
       case 'track':
-        const track = this.favsDatabase.getOne('track', id);
+        const track = this.database.getOne('track', id);
         if (!track) {
           throw new HttpException(
             'Track not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.favsDatabase.addFav('track', id);
+        this.database.addFav('track', id);
         break;
       case 'artist':
-        const artist = this.favsDatabase.getOne('artist', id);
+        const artist = this.database.getOne('artist', id);
         if (!artist) {
           throw new HttpException(
             'Artist not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.favsDatabase.addFav('artist', id);
+        this.database.addFav('artist', id);
         break;
       case 'album':
-        const album = this.favsDatabase.getOne('album', id);
+        const album = this.database.getOne('album', id);
         if (!album) {
           throw new HttpException(
             'Album not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.favsDatabase.addFav('album', id);
+        this.database.addFav('album', id);
         break;
     }
   }
 
   findAll() {
-    return this.favsDatabase.getAll('favs');
+    return this.database.getAll('favs');
   }
 
   remove(target: 'track' | 'artist' | 'album', id: string) {
@@ -56,31 +55,31 @@ export class FavsService {
     }
     switch (target) {
       case 'track':
-        const track = this.favsDatabase.getOne('track', id);
+        const track = this.database.getOne('track', id);
         if (!track) {
           throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
         }
-        this.favsDatabase.removeFav('track', id);
+        this.database.removeFav('track', id);
         break;
       case 'artist':
-        const artist = this.favsDatabase.getOne('artist', id);
+        const artist = this.database.getOne('artist', id);
         if (!artist) {
           throw new HttpException(
             'Artist not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.favsDatabase.removeFav('artist', id);
+        this.database.removeFav('artist', id);
         break;
       case 'album':
-        const album = this.favsDatabase.getOne('album', id);
+        const album = this.database.getOne('album', id);
         if (!album) {
           throw new HttpException(
             'Album not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.favsDatabase.removeFav('album', id);
+        this.database.removeFav('album', id);
         break;
     }
   }
