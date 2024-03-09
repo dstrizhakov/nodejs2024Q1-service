@@ -40,19 +40,19 @@ export class DatabaseService {
         return this.albums;
       case 'favs':
         const returnFavs: FavoritesResponse = {
-          artists: this.favs.artists.map((artistId) =>
-            this.artists.find((artist) => artist.id === artistId),
-          ),
-          albums: this.favs.albums.map((albumId) =>
-            this.albums.find((album) => album.id === albumId),
-          ),
-          tracks: this.favs.tracks.map((trackId) =>
-            this.tracks.find((track) => track.id === trackId),
-          ),
+          artists: this.favs.artists
+            .map((artistId) =>
+              this.artists.find((artist) => artist.id === artistId),
+            )
+            .filter((artist) => !!artist),
+          albums: this.favs.albums
+            .map((albumId) => this.albums.find((album) => album.id === albumId))
+            .filter((album) => !!album),
+          tracks: this.favs.tracks
+            .map((trackId) => this.tracks.find((track) => track.id === trackId))
+            .filter((track) => !!track),
         };
         return returnFavs;
-      default:
-        return null;
     }
   }
 
@@ -66,8 +66,6 @@ export class DatabaseService {
         return this.artists.find((artist) => artist.id === id);
       case 'album':
         return this.albums.find((album) => album.id === id);
-      default:
-        return null;
     }
   }
 
@@ -99,8 +97,20 @@ export class DatabaseService {
         this.tracks = this.tracks.filter((track) => track.id !== id);
       case 'artist':
         this.artists = this.artists.filter((artist) => artist.id !== id);
+        this.albums = this.albums.map((album) => ({
+          ...album,
+          artistId: album.artistId === id ? null : album.artistId,
+        }));
+        this.tracks = this.tracks.map((track) => ({
+          ...track,
+          artistId: track.artistId === id ? null : track.artistId,
+        }));
       case 'album':
         this.albums = this.albums.filter((album) => album.id !== id);
+        this.tracks = this.tracks.map((track) => ({
+          ...track,
+          albumId: track.albumId === id ? null : track.albumId,
+        }));
       default:
         return null;
     }
@@ -123,15 +133,15 @@ export class DatabaseService {
   public removeFav(target: 'track' | 'artist' | 'album', id: string) {
     switch (target) {
       case 'track':
-        this.favs.tracks = this.favs.tracks.filter((trackId) => trackId === id);
+        this.favs.tracks = this.favs.tracks.filter((trackId) => trackId !== id);
         break;
       case 'artist':
         this.favs.artists = this.favs.artists.filter(
-          (artistId) => artistId === id,
+          (artistId) => artistId !== id,
         );
         break;
       case 'album':
-        this.favs.albums = this.favs.albums.filter((albumId) => albumId === id);
+        this.favs.albums = this.favs.albums.filter((albumId) => albumId !== id);
         break;
     }
   }

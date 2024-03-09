@@ -44,7 +44,7 @@ export class TrackService {
     };
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
+  update(id: string, { name, artistId, albumId, duration }: UpdateTrackDto) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
@@ -52,10 +52,13 @@ export class TrackService {
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    track.name = updateTrackDto?.name || track.name;
-    track.duration = updateTrackDto?.duration || track.duration;
-    track.albumId = updateTrackDto?.albumId || null;
-    track.artistId = updateTrackDto?.artistId || null;
+    if (typeof name !== 'string' || typeof duration !== 'number') {
+      throw new HttpException('Uncorrect DTO', HttpStatus.BAD_REQUEST);
+    }
+    track.name = name;
+    track.duration = duration;
+    track.albumId = albumId ?? null;
+    track.artistId = artistId ?? null;
     return track;
   }
 

@@ -41,7 +41,7 @@ export class AlbumService {
     };
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
+  update(id: string, { name, year, artistId }: UpdateAlbumDto) {
     if (!validate(id)) {
       throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
     }
@@ -49,9 +49,16 @@ export class AlbumService {
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
-    album.name = updateAlbumDto?.name || album.name;
-    album.year = updateAlbumDto?.year || album.year;
-    album.artistId = updateAlbumDto?.artistId || null;
+    if (
+      typeof name !== 'string' ||
+      typeof year !== 'number' ||
+      !(typeof artistId === 'string' || typeof artistId === null)
+    ) {
+      throw new HttpException('Uncorrect DTO', HttpStatus.BAD_REQUEST);
+    }
+    album.name = name;
+    album.year = year;
+    album.artistId = artistId;
 
     return album;
   }

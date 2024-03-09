@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { CreateFavDto } from './dto/create-fav.dto';
 import { UpdateFavDto } from './dto/update-fav.dto';
@@ -33,14 +25,17 @@ export class FavsController {
   }
 
   @Delete('/track/:trackId')
+  @HttpCode(204)
   removeFavTrack(@Param('trackId') trackId: string) {
     return this.favsService.remove('track', trackId);
   }
   @Delete('/artist/:artistId')
+  @HttpCode(204)
   removeFavArtist(@Param('artistId') artistId: string) {
     return this.favsService.remove('artist', artistId);
   }
   @Delete('/album/:albumId')
+  @HttpCode(204)
   removeFavAlbum(@Param('albumId') albumId: string) {
     return this.favsService.remove('album', albumId);
   }
