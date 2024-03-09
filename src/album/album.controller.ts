@@ -3,9 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -16,6 +18,7 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe())
   create(@Body() createAlbumDto: CreateAlbumDto) {
     return this.albumService.create(createAlbumDto);
   }
@@ -30,13 +33,13 @@ export class AlbumController {
     return this.albumService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumService.update(+id, updateAlbumDto);
+    return this.albumService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.albumService.remove(+id);
+    return this.albumService.remove(id);
   }
 }

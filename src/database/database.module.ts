@@ -1,13 +1,9 @@
-import {
-  FavoritesResponse,
-  IAlbum,
-  IArtist,
-  IFavorites,
-  ITrack,
-  IUser,
-} from 'src/types';
+import { Module, Global } from '@nestjs/common';
+import { FavoritesResponse, IAlbum, IArtist, IFavorites, ITrack, IUser } from 'src/types';
 
-export class Database {
+@Global()
+@Module({})
+export class DatabaseModule {
   private users: IUser[];
   private tracks: ITrack[];
   private artists: IArtist[];
@@ -124,7 +120,9 @@ export class Database {
         this.favs.tracks = this.favs.tracks.filter((trackId) => trackId === id);
         break;
       case 'artist':
-        this.favs.artists = this.favs.artists.filter((artistId) => artistId === id);
+        this.favs.artists = this.favs.artists.filter(
+          (artistId) => artistId === id,
+        );
         break;
       case 'album':
         this.favs.albums = this.favs.albums.filter((albumId) => albumId === id);
