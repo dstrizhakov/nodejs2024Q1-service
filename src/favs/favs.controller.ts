@@ -1,11 +1,24 @@
 import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
 import { FavsService } from './favs.service';
+import { ApiTags, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
+@ApiTags('Favorites')
 @Controller('favs')
 export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Returns tracks, artists, albums arrays',
+    content: {
+      'application/json': {
+        schema: {
+          $ref: getSchemaPath('Favorites'),
+        },
+      },
+    },
+  })
   findAll() {
     return this.favsService.findAll();
   }
