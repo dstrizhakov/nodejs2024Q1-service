@@ -17,10 +17,23 @@ git clone {repository URL}
 npm install
 ```
 
+or
+
+```
+npm install --legacy-peer-deps
+```
+## Prepare
+Create a .env file with```PORT=4000```
+
 ## Running application
 
 ```
 npm start
+```
+or
+
+```
+npm run start:dev
 ```
 
 After starting the app on port (4000 as default) you can open
@@ -31,7 +44,7 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all tests without authorization(on this task there is no authorization)
 
 ```
 npm run test
@@ -41,18 +54,6 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
 ```
 
 ### Auto-fix and format
