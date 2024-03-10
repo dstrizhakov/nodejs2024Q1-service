@@ -1,10 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { config } from 'dotenv';
+
+config();
+const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(4000);
+  await app
+    .listen(PORT)
+    .then(() => console.log(`Server starts at http://localhost:${PORT}`));
 }
 bootstrap();
-
-console.log(Date.now());
