@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -11,4 +6,75 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id @default(uuid())
+  login     String @unique
+  password  String
+  version   Int @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Album {
+  id        String          @id @default(uuid())
+  name      String
+  year      Int
+  artistId  String?
+  artist    Artist?         @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  tracks    Track[]
+  favourite FavouriteAlbum?
+
+  @@map("albums")
+}
+
+model Artist {
+  id     String  @id @default(uuid())
+  name   String
+  grammy Boolean @default(false)
+  albums Album[]
+  tracks Track[]
+  favourite FavouriteArtist?
+
+  @@map("artists")
+}
+
+model Track {
+  id       String  @id @default(uuid())
+  name     String
+  duration Int
+  artistId String?
+  artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  albumId  String?
+  album    Album?  @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  favourite FavouriteTrack?
+
+  @@map("tracks")
+}
+
+model FavouriteAlbum {
+  id      Int    @id @default(autoincrement())
+  albumId String @unique
+  album   Album @relation(fields: [albumId], references: [id])
+
+  @@map("fav_albums")
+}
+
+model FavouriteArtist {
+  id       Int    @id @default(autoincrement())
+  artistId String @unique
+  artist   Artist @relation(fields: [artistId], references: [id])
+
+  @@map("fav_artists")
+}
+
+model FavouriteTrack {
+  id      Int    @id @default(autoincrement())
+  trackId String @unique
+  track   Track @relation(fields: [trackId], references: [id])
+
+  @@map("fav_tracks")
 }
