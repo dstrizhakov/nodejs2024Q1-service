@@ -6,8 +6,11 @@ import {
   Put,
   Param,
   Delete,
-  UsePipes,
+  HttpCode,
   ValidationPipe,
+  ParseUUIDPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -20,9 +23,9 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe())
+  @HttpCode(201)
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Create album using CreateAlbumDto',
     content: {
       'application/json': {
@@ -32,27 +35,42 @@ export class AlbumController {
       },
     },
   })
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumService.create(createAlbumDto);
+  async create(@Body(ValidationPipe) createAlbumDto: CreateAlbumDto) {
+    return await this.albumService.create(createAlbumDto);
   }
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  async findAll() {
+    return await this.albumService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.albumService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const album = await this.albumService.findOne(id);
+    if (!album) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
+    return album;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumService.update(id, updateAlbumDto);
+  async update(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body(ValidationPipe) updateAlbumDto: UpdateAlbumDto,
+  ) {
+    const album = await this.albumService.update(id, updateAlbumDto);
+    if (!album) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
+    return album;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumService.remove(id);
+  @HttpCode(204)
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const album = await this.albumService.remove(id);
+    if (!album) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

@@ -1,22 +1,19 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID, ValidateIf } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAlbumDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'The album should have a name' })
-  @ApiProperty()
   name: string;
+  @ApiProperty()
   @IsNumber()
+  @IsPositive()
   @IsNotEmpty({ message: 'The album should have a year' })
-  @ApiProperty()
   year: number;
-  @Transform(({ value }) => {
-    if (value === null || typeof value === 'string') {
-      return value;
-    }
-    return false;
-  })
   @ApiProperty()
+  @ValidateIf((_, value) => value !== null)
+  @IsNotEmpty({ message: 'The album should have an artistId' })
+  @IsUUID('4')
   artistId: string | null;
 }
