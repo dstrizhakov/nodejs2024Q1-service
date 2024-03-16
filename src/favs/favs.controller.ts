@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Delete,
+  HttpCode,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { ApiTags, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
@@ -22,32 +30,51 @@ export class FavsController {
   findAll() {
     return this.favsService.findAll();
   }
+
   @Post('/track/:trackId')
-  creatFavTrack(@Param('trackId') trackId: string) {
+  @HttpCode(201)
+  addFavTrack(
+    @Param('trackId', new ParseUUIDPipe({ version: '4' })) trackId: string,
+  ) {
     return this.favsService.create('track', trackId);
   }
+
   @Post('/artist/:artistId')
-  creatFavArtist(@Param('artistId') artistId: string) {
+  @HttpCode(201)
+  addFavArtist(
+    @Param('artistId', new ParseUUIDPipe({ version: '4' })) artistId: string,
+  ) {
     return this.favsService.create('artist', artistId);
   }
+
   @Post('/album/:albumId')
-  creatFavAlbum(@Param('albumId') albumId: string) {
+  @HttpCode(201)
+  addFavAlbum(
+    @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string,
+  ) {
     return this.favsService.create('album', albumId);
   }
 
   @Delete('/track/:trackId')
   @HttpCode(204)
-  removeFavTrack(@Param('trackId') trackId: string) {
+  removeFavTrack(
+    @Param('trackId', new ParseUUIDPipe({ version: '4' })) trackId: string,
+  ) {
     return this.favsService.remove('track', trackId);
   }
+
   @Delete('/artist/:artistId')
   @HttpCode(204)
-  removeFavArtist(@Param('artistId') artistId: string) {
+  removeFavArtist(
+    @Param('artistId', new ParseUUIDPipe({ version: '4' })) artistId: string,
+  ) {
     return this.favsService.remove('artist', artistId);
   }
   @Delete('/album/:albumId')
   @HttpCode(204)
-  removeFavAlbum(@Param('albumId') albumId: string) {
+  removeFavAlbum(
+    @Param('albumId', new ParseUUIDPipe({ version: '4' })) albumId: string,
+  ) {
     return this.favsService.remove('album', albumId);
   }
 }

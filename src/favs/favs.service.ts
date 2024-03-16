@@ -10,40 +10,45 @@ export class FavsService {
     private prisma: PrismaService,
   ) {}
 
-  create(target: 'track' | 'artist' | 'album', id: string) {
-    if (!validate(id)) {
-      throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
-    }
+  async create(target: 'track' | 'artist' | 'album', id: string) {
     switch (target) {
       case 'track':
-        const track = this.database.getOne('track', id);
+        const track = await this.prisma.track.findUnique({ where: { id } });
         if (!track) {
           throw new HttpException(
             'Track not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.database.addFav('track', id);
+        return await this.prisma.favouriteTrack.create({
+          data: { trackId: id },
+        });
         break;
       case 'artist':
-        const artist = this.database.getOne('artist', id);
+        const artist = await this.prisma.artist.findUnique({ where: { id } });
         if (!artist) {
           throw new HttpException(
             'Artist not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.database.addFav('artist', id);
+        return await this.prisma.favouriteArtist.create({
+          data: {
+            artistId: id,
+          },
+        });
         break;
       case 'album':
-        const album = this.database.getOne('album', id);
+        const album = await this.prisma.album.findUnique({ where: { id } });
         if (!album) {
           throw new HttpException(
             'Album not found',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         }
-        this.database.addFav('album', id);
+        return await this.prisma.favouriteAlbum.create({
+          data: { albumId: id },
+        });
         break;
     }
   }
@@ -57,20 +62,24 @@ export class FavsService {
         favoritesArtistsId.map(
           async (favArtist) =>
             await this.prisma.artist.findUnique({
-              where: { id: favArtist.id },
+              where: { id: favArtist.artistId },
             }),
         ),
       ),
       albums: await Promise.all(
         favoritesAlbumsId.map(
           async (favAlbum) =>
-            await this.prisma.artist.findUnique({ where: { id: favAlbum.id } }),
+            await this.prisma.album.findUnique({
+              where: { id: favAlbum.albumId },
+            }),
         ),
       ),
       tracks: await Promise.all(
         favoritesTracks.map(
           async (favTrack) =>
-            await this.prisma.artist.findUnique({ where: { id: favTrack.id } }),
+            await this.prisma.track.findUnique({
+              where: { id: favTrack.trackId },
+            }),
         ),
       ),
     };
