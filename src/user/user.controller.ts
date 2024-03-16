@@ -8,15 +8,14 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  ParseUUIDPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import {
-  ApiResponse,
-  ApiTags,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('user')
@@ -31,10 +30,10 @@ export class UserController {
     content: {
       'application/json': {
         schema: {
-          $ref: getSchemaPath('User')
-        }
-      }
-    }
+          $ref: getSchemaPath('User'),
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
@@ -57,8 +56,8 @@ export class UserController {
       },
     },
   })
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
@@ -68,10 +67,10 @@ export class UserController {
     content: {
       'application/json': {
         schema: {
-          $ref: getSchemaPath('User')
-        }
-      }
-    }
+          $ref: getSchemaPath('User'),
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
@@ -81,8 +80,12 @@ export class UserController {
     status: 404,
     description: 'User not found by this ID',
   })
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   @UsePipes(new ValidationPipe())
@@ -99,11 +102,11 @@ export class UserController {
     status: 400,
     description: 'userId is invalid (not uuid)',
   })
-  update(
-    @Param('id') id: string,
-    @Body() updatePasswordDto: UpdatePasswordDto,
+  async update(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
   ) {
-    return this.userService.update(id, updatePasswordDto);
+    return await this.userService.update(id, updatePasswordDto);
   }
 
   @Delete(':id')
@@ -119,7 +122,7 @@ export class UserController {
     status: 400,
     description: 'userId is invalid (not uuid)',
   })
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.userService.remove(id);
   }
 }
