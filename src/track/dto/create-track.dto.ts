@@ -9,9 +9,9 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTrackDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'The track should have a name' })
-  @ApiProperty()
   name: string;
   @ApiProperty()
   @ValidateIf((_, value) => value !== null)
