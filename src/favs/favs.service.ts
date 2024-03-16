@@ -1,10 +1,14 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { validate } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavsService {
-  constructor(private database: DatabaseService) {}
+  constructor(
+    private database: DatabaseService,
+    private prisma: PrismaService,
+  ) {}
 
   create(target: 'track' | 'artist' | 'album', id: string) {
     if (!validate(id)) {
@@ -44,8 +48,32 @@ export class FavsService {
     }
   }
 
-  findAll() {
-    return this.database.getAll('favs');
+  async findAll() {
+    const favoritesArtistsId = await this.prisma.favouriteArtist.findMany();
+    const favoritesAlbumsId = await this.prisma.favouriteAlbum.findMany();
+    const favoritesTracks = await this.prisma.favouriteTrack.findMany();
+    return {
+      artists: await Promise.all(
+        favoritesArtistsId.map(
+          async (favArtist) =>
+            await this.prisma.artist.findUnique({
+              where: { id: favArtist.id },
+            }),
+        ),
+      ),
+      albums: await Promise.all(
+        favoritesAlbumsId.map(
+          async (favAlbum) =>
+            await this.prisma.artist.findUnique({ where: { id: favAlbum.id } }),
+        ),
+      ),
+      tracks: await Promise.all(
+        favoritesTracks.map(
+          async (favTrack) =>
+            await this.prisma.artist.findUnique({ where: { id: favTrack.id } }),
+        ),
+      ),
+    };
   }
 
   remove(target: 'track' | 'artist' | 'album', id: string) {
