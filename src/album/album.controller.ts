@@ -68,8 +68,8 @@ export class AlbumController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const album = await this.albumService.remove(id);
-    if (!album) {
+    const status = await this.albumService.remove(id);
+    if (!status) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
   }

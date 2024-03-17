@@ -26,15 +26,16 @@ export class AlbumService {
         data: updateAlbumDto,
       });
     } catch {
-      return;
+      return false;
     }
   }
 
   async remove(id: string) {
     try {
-      return await this.prisma.album.delete({ where: { id } });
+      await this.prisma.album.delete({ where: { id } });
+      return true
     } catch {
-      return null;
+      return false;
     }
   }
 }

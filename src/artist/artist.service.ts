@@ -26,15 +26,16 @@ export class ArtistService {
         data: updateArtistDto,
       });
     } catch {
-      return;
+      return false;
     }
   }
 
   async remove(id: string) {
     try {
-      return await this.prisma.artist.delete({ where: { id } });
+      await this.prisma.artist.delete({ where: { id } });
+      return true;
     } catch {
-      return;
+      return false;
     }
   }
 }

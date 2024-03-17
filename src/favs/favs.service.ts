@@ -3,9 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavsService {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(target: 'track' | 'artist' | 'album', id: string) {
     switch (target) {
@@ -73,24 +71,24 @@ export class FavsService {
     switch (target) {
       case 'track':
         try {
-          await this.prisma.track.delete({ where: { id } });
+          await this.prisma.favouriteTrack.delete({ where: { trackId: id } });
           return true;
         } catch {
-          return;
+          return false;
         }
       case 'artist':
         try {
-          await this.prisma.artist.delete({ where: { id } });
+          await this.prisma.favouriteArtist.delete({ where: { artistId: id } });
           return true;
         } catch {
-          return;
+          return false;
         }
       case 'album':
         try {
-          await this.prisma.album.delete({ where: { id } });
+          await this.prisma.favouriteAlbum.delete({ where: { albumId: id } });
           return true;
         } catch {
-          return;
+          return false;
         }
     }
   }

@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,8 +14,6 @@ model User {
   version   Int @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("users")
 }
 
 model Album {
@@ -27,8 +24,6 @@ model Album {
   artist    Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   tracks    Track[]
   favourite FavouriteAlbum?
-
-  @@map("albums")
 }
 
 model Artist {
@@ -38,8 +33,6 @@ model Artist {
   albums Album[]
   tracks Track[]
   favourite FavouriteArtist?
-
-  @@map("artists")
 }
 
 model Track {
@@ -51,30 +44,22 @@ model Track {
   albumId  String?
   album    Album?  @relation(fields: [albumId], references: [id], onDelete: SetNull)
   favourite FavouriteTrack?
-
-  @@map("tracks")
 }
 
 model FavouriteAlbum {
   id      String @id @default(uuid())
   albumId String @unique
   album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
-
-  @@map("fav_albums")
 }
 
 model FavouriteArtist {
   id       String @id @default(uuid())
   artistId String @unique
   artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
-
-  @@map("fav_artists")
 }
 
 model FavouriteTrack {
   id      String @id @default(uuid())
   trackId String @unique
   track   Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
-
-  @@map("fav_tracks")
 }

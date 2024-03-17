@@ -71,8 +71,8 @@ export class TrackController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const track = await this.trackService.remove(id);
-    if (!track) {
+    const status = await this.trackService.remove(id);
+    if (!status) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
   }

@@ -70,8 +70,8 @@ export class ArtistController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const artist = await this.artistService.remove(id);
-    if (!artist) {
+    const status = await this.artistService.remove(id);
+    if (!status) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
   }

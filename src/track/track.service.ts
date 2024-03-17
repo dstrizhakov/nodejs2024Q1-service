@@ -28,19 +28,16 @@ export class TrackService {
         data: updateTrackDto,
       });
     } catch {
-      return;
+      return false;
     }
   }
 
   async remove(id: string) {
     try {
-      return await this.prisma.track.delete({
-        where: {
-          id,
-        },
-      });
+      await this.prisma.track.delete({ where: { id } });
+      return true;
     } catch {
-      return;
+      return false;
     }
   }
 }
