@@ -4,15 +4,13 @@ import { validate } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { prismaExclude } from 'src/utils/exclude';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async create({ login, password }: CreateUserDto) {
-    if (!login || !password) {
-      throw new HttpException('', HttpStatus.BAD_REQUEST);
-    }
     const user = await this.prisma.user.create({
       data: {
         login,
@@ -21,22 +19,25 @@ export class UserService {
       },
       select: prismaExclude('User', ['password']),
     });
-    return user;
+    const createdUser = new User(user);
+    return createdUser;
   }
 
   async findAll() {
     return await this.prisma.user.findMany({
-      // select: prismaExclude('User', ['password']),
+      select: prismaExclude('User', ['password']),
     });
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         id,
       },
       select: prismaExclude('User', ['password']),
     });
+    if (!user) return;
+    return user;
   }
 
   async update(id: string, { oldPassword, newPassword }: UpdatePasswordDto) {
@@ -64,11 +65,10 @@ export class UserService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    try {
+      return await this.prisma.user.delete({ where: { id } });
+    } catch {
+      return null;
     }
-    this.prisma.user.delete({ where: { id } });
-    throw new HttpException('User deleted', HttpStatus.NO_CONTENT);
   }
 }

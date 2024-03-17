@@ -21,7 +21,10 @@ export class AlbumService {
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
     try {
-      return this.prisma.album.update({ where: { id }, data: updateAlbumDto });
+      return await this.prisma.album.update({
+        where: { id },
+        data: updateAlbumDto,
+      });
     } catch {
       return;
     }
@@ -29,9 +32,9 @@ export class AlbumService {
 
   async remove(id: string) {
     try {
-      return this.prisma.album.delete({ where: { id } });
+      return await this.prisma.album.delete({ where: { id } });
     } catch {
-      return;
+      return null;
     }
   }
 }

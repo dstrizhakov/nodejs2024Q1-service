@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,8 +23,8 @@ import { ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UsePipes(new ValidationPipe())
   @Post()
+  @HttpCode(201)
   @ApiResponse({
     status: 200,
     description: 'Create user using CreateUserDto',
@@ -39,7 +40,7 @@ export class UserController {
     status: 400,
     description: 'DTO is uncorrect',
   })
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
@@ -110,6 +111,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @ApiResponse({
     status: 204,
     description: 'The User has been deleted',
@@ -122,7 +124,10 @@ export class UserController {
     status: 400,
     description: 'userId is invalid (not uuid)',
   })
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.userService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const user = await this.userService.remove(id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

@@ -1,55 +1,28 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { validate } from 'uuid';
-import { DatabaseService } from 'src/database/database.service';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavsService {
   constructor(
-    private database: DatabaseService,
     private prisma: PrismaService,
   ) {}
 
   async create(target: 'track' | 'artist' | 'album', id: string) {
     switch (target) {
       case 'track':
-        const track = await this.prisma.track.findUnique({ where: { id } });
-        if (!track) {
-          throw new HttpException(
-            'Track not found',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
-        }
         return await this.prisma.favouriteTrack.create({
           data: { trackId: id },
         });
-        break;
       case 'artist':
-        const artist = await this.prisma.artist.findUnique({ where: { id } });
-        if (!artist) {
-          throw new HttpException(
-            'Artist not found',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
-        }
         return await this.prisma.favouriteArtist.create({
           data: {
             artistId: id,
           },
         });
-        break;
       case 'album':
-        const album = await this.prisma.album.findUnique({ where: { id } });
-        if (!album) {
-          throw new HttpException(
-            'Album not found',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
-        }
         return await this.prisma.favouriteAlbum.create({
           data: { albumId: id },
         });
-        break;
     }
   }
 
@@ -85,38 +58,40 @@ export class FavsService {
     };
   }
 
-  remove(target: 'track' | 'artist' | 'album', id: string) {
-    if (!validate(id)) {
-      throw new HttpException('UUID is invalid', HttpStatus.BAD_REQUEST);
-    }
+  async get(target: 'track' | 'artist' | 'album', id: string) {
     switch (target) {
       case 'track':
-        const track = this.database.getOne('track', id);
-        if (!track) {
-          throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-        }
-        this.database.removeFav('track', id);
-        break;
+        return await this.prisma.favouriteTrack.findUnique({ where: { id } });
       case 'artist':
-        const artist = this.database.getOne('artist', id);
-        if (!artist) {
-          throw new HttpException(
-            'Artist not found',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
-        }
-        this.database.removeFav('artist', id);
-        break;
+        return await this.prisma.favouriteArtist.findUnique({ where: { id } });
       case 'album':
-        const album = this.database.getOne('album', id);
-        if (!album) {
-          throw new HttpException(
-            'Album not found',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
+        return await this.prisma.favouriteAlbum.findUnique({ where: { id } });
+    }
+  }
+
+  async remove(target: 'track' | 'artist' | 'album', id: string) {
+    switch (target) {
+      case 'track':
+        try {
+          await this.prisma.track.delete({ where: { id } });
+          return true;
+        } catch {
+          return;
         }
-        this.database.removeFav('album', id);
-        break;
+      case 'artist':
+        try {
+          await this.prisma.artist.delete({ where: { id } });
+          return true;
+        } catch {
+          return;
+        }
+      case 'album':
+        try {
+          await this.prisma.album.delete({ where: { id } });
+          return true;
+        } catch {
+          return;
+        }
     }
   }
 }

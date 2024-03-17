@@ -24,9 +24,9 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
-  @HttpCode(200)
+  @HttpCode(201)
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Create track using CreateTrackDto',
     content: {
       'application/json': {

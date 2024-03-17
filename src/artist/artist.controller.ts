@@ -35,7 +35,7 @@ export class ArtistController {
     },
   })
   @HttpCode(201)
-  async create(@Body() createArtistDto: CreateArtistDto) {
+  async create(@Body(ValidationPipe) createArtistDto: CreateArtistDto) {
     return await this.artistService.create(createArtistDto);
   }
 
@@ -45,6 +45,7 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @HttpCode(200)
   async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     const artist = await this.artistService.findOne(id);
     if (!artist) {
@@ -54,8 +55,9 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @HttpCode(200)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body(ValidationPipe) updateArtistDto: UpdateArtistDto,
   ) {
     const artist = await this.artistService.update(id, updateArtistDto);
@@ -67,7 +69,7 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     const artist = await this.artistService.remove(id);
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);

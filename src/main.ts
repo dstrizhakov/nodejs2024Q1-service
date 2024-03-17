@@ -5,11 +5,6 @@ import { config } from 'dotenv';
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { load } from 'js-yaml';
-import { UserModule } from './user/user.module';
-import { ArtistModule } from './artist/artist.module';
-import { AlbumModule } from './album/album.module';
-import { TrackModule } from './track/track.module';
-import { FavsModule } from './favs/favs.module';
 
 config();
 const PORT = process.env.PORT || 4000;
@@ -29,3 +24,7 @@ async function bootstrap() {
   });
 }
 bootstrap();
+
+Date.prototype.toJSON = function () {
+  return this.valueOf();
+};

@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id        String @id @default(uuid())
-  login     String @unique
+  login     String
   password  String
   version   Int @default(autoincrement())
   createdAt DateTime @default(now())
@@ -58,7 +58,7 @@ model Track {
 model FavouriteAlbum {
   id      String @id @default(uuid())
   albumId String @unique
-  album   Album @relation(fields: [albumId], references: [id])
+  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
 
   @@map("fav_albums")
 }
@@ -66,7 +66,7 @@ model FavouriteAlbum {
 model FavouriteArtist {
   id       String @id @default(uuid())
   artistId String @unique
-  artist   Artist @relation(fields: [artistId], references: [id])
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   @@map("fav_artists")
 }
@@ -74,7 +74,7 @@ model FavouriteArtist {
 model FavouriteTrack {
   id      String @id @default(uuid())
   trackId String @unique
-  track   Track @relation(fields: [trackId], references: [id])
+  track   Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
   @@map("fav_tracks")
 }
