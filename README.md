@@ -11,44 +11,19 @@
 git clone {repository URL}
 ```
 
-## Installing NPM modules
-
-```
-npm install
-```
-
-or
-
-```
-npm install --legacy-peer-deps
-```
-
 ## Prepare
 
-Create a .env file with`PORT=4000`
+Create a .env file using .env.example
 
-## Prisma and Database
+<hr>
 
-```
-npx prisma db push
-npx prisma migrate reset
-```
-
-## Running application
+## Start application in Docker containers:
 
 ```
-npm start
+docker compose up
 ```
 
-or
-
-```
-npm run start:dev
-```
-
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+<hr>
 
 ## Data types
 
@@ -248,7 +223,16 @@ After application running open new terminal and enter:
 
 To run all tests without authorization(on this task there is no authorization)
 
+- View the list of running containers:
+
 ```
+docker ps
+```
+
+- Go inside nodejs2024q1-service-node container and run the tests
+
+```
+docker exec -it [CONTAINER ID] sh
 npm run test
 ```
 
