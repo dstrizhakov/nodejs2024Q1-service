@@ -30,16 +30,16 @@ services:
     networks:
       - rslib-network
 
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    restart: on-failure
-    env_file:
-      - .env
-    ports:
-      - '${PGADMIN_PORT}:${PGADMIN_PORT_DOCKER}'
-    networks:
-      - rslib-network
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4
+  #   restart: on-failure
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - '${PGADMIN_PORT}:${PGADMIN_PORT_DOCKER}'
+  #   networks:
+  #     - rslib-network
 
 networks:
   rslib-network:

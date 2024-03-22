@@ -22,6 +22,10 @@ Create a .env file using .env.example
 ```
 docker compose up
 ```
+If you want to build new containets:
+```
+docker compose up --build
+```
 
 <hr>
 
