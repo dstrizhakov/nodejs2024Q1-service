@@ -6,7 +6,9 @@ services:
       dockerfile: ./docker/node/Dockerfile
     env_file:
       - .env
-    restart: on-failure
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
     depends_on:
       - postgres
     volumes:
@@ -20,10 +22,8 @@ services:
     image: postgres:15
     env_file:
       - .env
-    expose:
-      - 5432
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     restart: on-failure
     volumes:
       - postgres-data:/var/lib/postgresql@15/data:rw
@@ -37,7 +37,7 @@ services:
     env_file:
       - .env
     ports:
-      - '5050:80'
+      - '${PGADMIN_PORT}:${PGADMIN_PORT_DOCKER}'
     networks:
       - rslib-network
 
