@@ -20,7 +20,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "start:docker": "npx prisma generate && npx prisma migrate deploy && npx prisma db push && nest start --watch"
+    "start:docker": "npx prisma generate && npx prisma migrate deploy && npx prisma db push && nest start --watch",
+    "docker:scan": "docker scout cves strizhakov/node"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

@@ -1,6 +1,7 @@
 services:
   node:
     container_name: node
+    image: strizhakov/node
     build:
       context: .
       dockerfile: ./docker/node/Dockerfile
