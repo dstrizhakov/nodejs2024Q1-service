@@ -22,12 +22,16 @@ Create a .env file using .env.example
 ```
 docker compose up
 ```
-If you want to build new containets:
+If you want to build new containers:
 ```
 docker compose up --build
 ```
 
 <hr>
+
+<details>
+
+<summary>Data types</summary>
 
 ## Data types
 
@@ -85,6 +89,10 @@ docker compose up --build
     tracks: string[]; // favorite tracks ids
   }
   ```
+</details>
+<details>
+
+<summary>Api details</summary>
 
 ## API
 
@@ -220,6 +228,8 @@ There are `Users`, `Artists`, `Albums`, `Tracks` and `Favorites` REST endpoints 
       - Server answers with `status code` **204** if the artist was in favorites and now it's deleted id is found and deleted
       - Server answers with `status code` **400** and corresponding message if `artistId` is invalid (not `uuid`)
       - Server answers with `status code` **404** and corresponding message if corresponding artist is not favorite
+
+</details>
 
 ## Testing
 
