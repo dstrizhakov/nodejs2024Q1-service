@@ -1,0 +1,51 @@
+services:
+  node:
+    container_name: node
+    image: strizhakov/node
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - node-modules:/app/node_modules
+    networks:
+      - rslib-network
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    restart: on-failure
+    volumes:
+      - postgres-data:/var/lib/postgresql@15/data:rw
+    networks:
+      - rslib-network
+
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4
+  #   restart: on-failure
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - '${PGADMIN_PORT}:${PGADMIN_PORT_DOCKER}'
+  #   networks:
+  #     - rslib-network
+
+networks:
+  rslib-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  node-modules:
